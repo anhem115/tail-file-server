@@ -48,7 +48,7 @@ build)
   ;;
 start|up)
   exportEnvironment "$@"
-  docker-compose up ngrok-tails-server tails-server
+  docker-compose up tails-server
   echo "Run './manage logs' for logs" 
   ;;
 test)
