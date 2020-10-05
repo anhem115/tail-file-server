@@ -11,6 +11,7 @@ def main():
     configure_logging(
         logging_config_path=settings["log_config"], log_level=settings["log_level"]
     )
+    print("ZJKJDKJSDKLF")
     start(settings)
 
 

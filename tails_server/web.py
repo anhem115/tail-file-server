@@ -21,6 +21,7 @@ routes = web.RouteTableDef()
 
 @routes.get("/{revocation_reg_id}")
 async def get_file(request):
+    print("GETTTTTTTTTTTTTTTTTTTTT" f"{request.match_info['revocation_reg_id']}")
     revocation_reg_id = request.match_info["revocation_reg_id"]
     storage_path = request.app["settings"]["storage_path"]
 
@@ -39,6 +40,7 @@ async def get_file(request):
                 await response.write(chunk)
 
     except FileNotFoundError:
+        print("NO FILE FOUND")
         raise web.HTTPNotFound()
 
     await response.write_eof()
@@ -46,6 +48,8 @@ async def get_file(request):
 
 @routes.put("/{revocation_reg_id}")
 async def put_file(request):
+    print("PUTTTTTTTTTTTTTTTTTT")
+    print(request.headers)
     storage_path = request.app["settings"]["storage_path"]
 
     # Check content-type for multipart
@@ -58,6 +62,7 @@ async def put_file(request):
 
     # Get genesis transactions
     field = await reader.next()
+    print(field)
     if field.name != "genesis":
         LOGGER.debug(f"First field is not `genesis`, it's {field.name}")
         raise web.HTTPBadRequest(
@@ -85,6 +90,8 @@ async def put_file(request):
         raise web.HTTPNotFound()
 
     tails_hash = revocation_registry_definition["value"]["tailsHash"]
+    print(f"revocation registry definition:{revocation_registry_definition['value']}")
+    print("tails hashA:" f"{tails_hash}")
 
     # Get second field
     field = await reader.next()
@@ -114,6 +121,7 @@ async def put_file(request):
             digest = sha256.digest()
             b58_digest = base58.b58encode(digest).decode("utf-8")
             if tails_hash != b58_digest:
+                print("tails hashB:" f"{b58_digest}")
                 raise web.HTTPBadRequest(text="tailsHash does not match hash of file.")
 
             # File integrity is good so write file to permanent location.
